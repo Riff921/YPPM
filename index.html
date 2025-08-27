@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi - SMK YPPM TOMO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Libraries for Excel and PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navbar -->
+        <nav class="bg-white/10 backdrop-blur-md rounded-xl mb-6 md:mb-8 animate-fade-in">
+            <div class="flex justify-between items-center p-4">
+                <div class="text-white font-semibold text-lg">SMK YPPM TOMO</div>
+                <div id="navButtons">
+                    <button id="loginBtn" onclick="showLoginModal()" class="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors text-sm">
+                        🔐 Admin Login
+                    </button>
+                    <div id="adminControls" class="hidden flex items-center space-x-3">
+                        <span class="text-white text-sm">👋 Selamat datang, Admin!</span>
+                        <button onclick="logout()" class="bg-red-500/80 text-white px-3 py-1 rounded-lg hover:bg-red-600/80 transition-colors text-sm">
+                            🚪 Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <div class="text-center mb-6 md:mb-8 animate-fade-in">
+            <h1 class="text-2xl md:text-4xl font-bold text-white mb-2">SMK YPPM TOMO</h1>
+            <p class="text-lg md:text-xl text-blue-100">Sistem Absensi Digital</p>
+            <div class="mt-4 text-blue-100">
+                <div id="currentDateTime" class="text-sm md:text-lg font-medium px-2"></div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="max-w-2xl mx-auto" id="attendanceFormSection">
+            <div class="bg-white rounded-xl md:rounded-2xl card-shadow p-4 md:p-8 animate-fade-in">
+                <div class="text-center mb-6 md:mb-8">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-2">Form Absensi</h2>
+                    <p class="text-sm md:text-base text-gray-600">Silakan isi data absensi Anda</p>
+                </div>
+
+                <form id="absensiForm" class="space-y-4 md:space-y-6">
+                    <!-- Nama -->
+                    <div>
+                        <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nama Lengkap *
+                        </label>
+                        <select id="nama" name="nama" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                            <option value="">Pilih Nama</option>
+                            <option value="Heri Heryana, S.Pd.">Heri Heryana, S.Pd.</option>
+                            <option value="Abdurahman Arosyid, S.Pd.I">Abdurahman Arosyid, S.Pd.I</option>
+                            <option value="Hadi Supriadi, S.KOM.">Hadi Supriadi, S.KOM.</option>
+                            <option value="Sawali">Sawali</option>
+                            <option value="Suci Indah Novianty, S.Pd.I">Suci Indah Novianty, S.Pd.I</option>
+                            <option value="Ajeng Saputri, S.S.">Ajeng Saputri, S.S.</option>
+                            <option value="Indra Mulyana, S.Pd.">Indra Mulyana, S.Pd.</option>
+                            <option value="Encep Syafa'at Multazam, S.T.">Encep Syafa'at Multazam, S.T.</option>
+                            <option value="Alih Nurningsih, S.Pd.">Alih Nurningsih, S.Pd.</option>
+                            <option value="Bambang Liman Mulyana, S.Pd.">Bambang Liman Mulyana, S.Pd.</option>
+                            <option value="Akus Kustandi, S.S.">Akus Kustandi, S.S.</option>
+                        </select>
+                    </div>
+
+                    <!-- Jabatan -->
+                    <div>
+                        <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">
+                            Jabatan *
+                        </label>
+                        <select id="jabatan" name="jabatan" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                            <option value="">Pilih Jabatan</option>
+                            <option value="Kepala Sekolah">Kepala Sekolah</option>
+                            <option value="Guru">Guru</option>
+                            <option value="Staf">Staf</option>
+                        </select>
+                    </div>
+
+                    <!-- Jenis Absensi -->
+                    <div>
+                        <label for="jenisAbsensi" class="block text-sm font-medium text-gray-700 mb-2">
+                            Jenis Absensi *
+                        </label>
+                        <select id="jenisAbsensi" name="jenisAbsensi" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                            <option value="">Pilih Jenis Absensi</option>
+                            <option value="Absen Masuk">Absen Masuk</option>
+                            <option value="Absen Pulang">Absen Pulang</option>
+                            <option value="Izin Dinas">Izin Dinas</option>
+                        </select>
+                    </div>
+
+                    <!-- Waktu (Otomatis) -->
+                    <div>
+                        <label for="waktu" class="block text-sm font-medium text-gray-700 mb-2">
+                            Waktu Absensi
+                        </label>
+                        <input type="text" id="waktu" name="waktu" readonly
+                               class="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+                               placeholder="Waktu akan terdeteksi otomatis">
+                    </div>
+
+                    <!-- Bukti Selfie -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Bukti Selfie *
+                        </label>
+                        <div class="border border-gray-300 rounded-lg p-4">
+                            <div id="cameraContainer" class="text-center">
+                                <video id="video" width="100%" height="200" autoplay class="rounded-lg bg-gray-100 hidden"></video>
+                                <canvas id="canvas" width="320" height="240" class="rounded-lg hidden"></canvas>
+                                <div id="photoPreview" class="hidden">
+                                    <img id="capturedPhoto" class="w-full h-48 object-cover rounded-lg">
+                                </div>
+                                <div id="cameraPlaceholder" class="flex flex-col items-center justify-center h-40 md:h-48 bg-gray-50 rounded-lg">
+                                    <svg class="w-12 md:w-16 h-12 md:h-16 text-gray-400 mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <p class="text-sm md:text-base text-gray-600 mb-3 md:mb-4 text-center px-2">Ambil foto selfie untuk bukti absensi</p>
+                                    <button type="button" id="startCamera" class="bg-blue-600 text-white px-3 md:px-4 py-2 text-sm md:text-base rounded-lg hover:bg-blue-700 transition-colors">
+                                        📷 Buka Kamera
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="cameraControls" class="mt-4 text-center hidden">
+                                <button type="button" id="capturePhoto" class="bg-green-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-green-700 transition-colors mr-2">
+                                    📸 Ambil Foto
+                                </button>
+                                <button type="button" id="retakePhoto" class="bg-gray-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-gray-700 transition-colors hidden">
+                                    🔄 Foto Ulang
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selfieData" name="selfieData" required>
+                        <p class="text-sm text-gray-600 mt-2">📸 Pastikan wajah Anda terlihat jelas dalam foto</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitButton"
+                            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 md:py-4 px-4 md:px-6 text-sm md:text-base rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        <span id="submitText">Submit Absensi</span>
+                        <span id="loadingText" class="hidden"><span class="loading-spinner"></span>Memproses...</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Admin Database Section -->
+            <div id="adminSection" class="mt-6 md:mt-8 bg-white rounded-xl md:rounded-2xl card-shadow p-4 md:p-8 animate-fade-in hidden">
+            </div>
+        </div>
+
+        <!-- Admin Dashboard Full Width -->
+        <div id="adminDashboard" class="hidden animate-fade-in">
+            <div class="bg-white rounded-xl md:rounded-2xl card-shadow p-4 md:p-8">
+                <!-- Header with Export Buttons -->
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-3 md:space-y-0">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-800">📊 Dashboard Admin - Database Absensi</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportToCSV()" class="export-btn bg-green-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            📊 Export CSV
+                        </button>
+                        <button onclick="exportToExcel()" class="export-btn bg-emerald-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            📗 Export Excel
+                        </button>
+                        <button onclick="exportToPDF()" class="export-btn bg-red-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            📄 Export PDF
+                        </button>
+                        <button onclick="exportToJSON()" class="export-btn bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            💾 Export JSON
+                        </button>
+                        <button onclick="clearDatabase()" class="bg-gray-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                            🗑️ Hapus Semua
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 md:p-4 rounded-lg">
+                        <div class="text-lg md:text-2xl font-bold" id="totalRecords">0</div>
+                        <div class="text-xs md:text-sm opacity-90">Total Records</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-3 md:p-4 rounded-lg">
+                        <div class="text-lg md:text-2xl font-bold" id="todayRecords">0</div>
+                        <div class="text-xs md:text-sm opacity-90">Hari Ini</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-3 md:p-4 rounded-lg">
+                        <div class="text-lg md:text-2xl font-bold" id="thisWeekRecords">0</div>
+                        <div class="text-xs md:text-sm opacity-90">Minggu Ini</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-3 md:p-4 rounded-lg">
+                        <div class="text-lg md:text-2xl font-bold" id="thisMonthRecords">0</div>
+                        <div class="text-xs md:text-sm opacity-90">Bulan Ini</div>
+                    </div>
+                </div>
+                
+                <!-- Filters -->
+                <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Filter Tanggal</label>
+                        <input type="date" id="filterDate" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Filter Nama</label>
+                        <select id="filterNama" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Semua Nama</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Filter Jenis</label>
+                        <select id="filterJenis" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Semua Jenis</option>
+                            <option value="Absen Masuk">Absen Masuk</option>
+                            <option value="Absen Pulang">Absen Pulang</option>
+                            <option value="Izin Dinas">Izin Dinas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 text-sm">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">No</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Tanggal</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Waktu</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Nama</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Jabatan</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Jenis</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Foto</th>
+                                <th class="border border-gray-300 px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="databaseTable">
+                            <tr>
+                                <td colspan="8" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                                    Belum ada data dalam database
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+                    <div class="text-sm text-gray-600" id="paginationInfo">
+                        Menampilkan 0 dari 0 data
+                    </div>
+                    <div class="flex space-x-2" id="paginationControls">
+                        <button onclick="changePage(-1)" id="prevBtn" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            ← Prev
+                        </button>
+                        <span class="px-3 py-1 text-sm bg-blue-600 text-white rounded" id="currentPage">1</span>
+                        <button onclick="changePage(1)" id="nextBtn" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl md:rounded-2xl p-6 md:p-8 max-w-sm md:max-w-md w-full animate-fade-in">
+            <div class="text-center mb-6">
+                <div class="w-12 md:w-16 h-12 md:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                    <svg class="w-6 md:w-8 h-6 md:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-1a2 2 0 00-2-2H6a2 2 0 00-2 2v1a2 2 0 002 2zM12 9a3 3 0 100-6 3 3 0 000 6z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-2">Admin Login</h3>
+                <p class="text-sm md:text-base text-gray-600">Masukkan kredensial admin untuk mengakses database</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" name="username" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Masukkan username">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" name="password" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Masukkan password">
+                </div>
+                <div id="loginError" class="hidden text-red-600 text-sm text-center">
+                    Username atau password salah!
+                </div>
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeLoginModal()" 
+                            class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl md:rounded-2xl p-6 md:p-8 max-w-sm md:max-w-md w-full text-center animate-fade-in">
+            <div class="w-12 md:w-16 h-12 md:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                <svg class="w-6 md:w-8 h-6 md:h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-2">Absensi Berhasil!</h3>
+            <p class="text-sm md:text-base text-gray-600 mb-4 md:mb-6">Data absensi Anda telah tersimpan</p>
+            <button onclick="closeModal()" 
+                    class="bg-blue-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-blue-700 transition-colors">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Photo Modal -->
+    <div id="photoModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 p-4">
+        <div class="max-w-2xl max-h-full relative">
+            <img id="modalPhoto" class="max-w-full max-h-full rounded-lg" alt="Foto Selfie">
+            <button onclick="closePhotoModal()" 
+                    class="absolute top-2 right-2 bg-white text-black px-3 py-1 rounded-full hover:bg-gray-200 text-sm font-bold">
+                ✕
+            </button>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
